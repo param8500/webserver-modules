@@ -11,11 +11,14 @@ resource "aws_launch_configuration" "mylc" {
   instance_type   = var.instance_type
   security_groups = [aws_security_group.mysg.id]
 
-  user_data = templatefile(userdata.sh, {
-    server_port = var.port
-    db_address = data.terraform_remote_state.db.outputs.address
-    db_port = data.terraform_remote_state.db.outputs.port
-  } )
+  user_data = <<EOF
+              #!/bin/bash
+              echo "Hello, World" >> index.html
+              echo "${data.terraform_remote_state.db.outputs.address}">>index.html
+              echo "${data.terraform_remote_state.db.outputs.port}">>index.html
+              nohup busybox httpd -f -p ${var.port} &
+              EOF
+
   lifecycle {
     create_before_destroy = true
   }
