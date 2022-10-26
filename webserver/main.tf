@@ -11,7 +11,7 @@ resource "aws_launch_configuration" "mylc" {
   instance_type   = var.instance_type
   security_groups = [aws_security_group.mysg.id]
 
-  user_data = templatefile(${module.path}/webserver/userdata.sh, {
+  user_data = templatefile(userdata.sh, {
     server_port = var.port
     db_address = data.terraform_remote_state.db.outputs.address
     db_port = data.terraform_remote_state.db.outputs.port
