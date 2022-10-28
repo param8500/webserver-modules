@@ -1,6 +1,6 @@
 data "terraform_remote_state" "db" {
   backend = "s3"
-  config {
+  config = {
     bucket = var.db_remote_state_bucket
     key = var.db_remote_state_key
     region = "us-east-2"
@@ -54,7 +54,7 @@ data "aws_subnets" "default" {
 resource "aws_security_group" "mysg" {
 name = "${var.environment}-web-sg"
 }
-resource "aws_security_group" "web-irule" {
+resource "aws_security_group_rule" "web-irule" {
 type = "ingress"
 security_group_id = aws_security_group.mysg.id
 from_port   = var.port
@@ -97,7 +97,7 @@ resource "aws_lb_listener_rule" "alb-lr" {
 resource "aws_security_group" "alb_sg" {
   name = "${var.environment}-alb-sg"
 }
-resource "aws_security_group" "in-rule" {
+resource "aws_security_group_rule" "in-rule" {
   type = "ingress"
   security_group_id = aws_security_group.alb_sg.id
   from_port   = local.http_port
@@ -106,7 +106,7 @@ resource "aws_security_group" "in-rule" {
   cidr_blocks = local.all_ips
 }
 
-resource "aws_security_group" "ex-rule" {
+resource "aws_security_group_rule" "ex-rule" {
   type = "egress"
   security_group_id = aws_security_group.alb_sg.id
   from_port   = local.any_port
